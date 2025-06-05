@@ -30,20 +30,26 @@ class AlbumService {
   }
 
   async getAlbumById(id) {
-    const query = {
-      text: `
-      SELECT albums.id, albums.name, albums.year, songs.id
-      FROM albums
-      LEFT JOIN songs ON albums.id = songs.album_id
-      WHERE albums.id = $1
-      `,
+    const queryAlbum = {
+      text: 'SELECT id, name, year FROM albums WHERE id = $1',
       values: [id]
     }
 
-    const result = await this._pool.query(query).catch((err) => err);
-    console.log(result)
+    const result = await this._pool.query(queryAlbum);
     if (!result.rows.length) {
       throw new NotFoundError('Album not found.');
+    }
+
+    result.rows[0].songs = [];
+
+    const querySongs = {
+      text: 'SELECT id, title, performer FROM songs WHERE album_id = $1',
+      values: [id]
+    }
+
+    const resultSongs = await this._pool.query(querySongs);
+    if (resultSongs.rows.length) {
+      result.rows[0].songs = [...resultSongs.rows];
     }
 
     return result.rows.map(mapDBAlbumsColumnsToModel)[0]; 

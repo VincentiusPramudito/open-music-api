@@ -29,8 +29,20 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs() {
-    const result = await this._pool.query('SELECT id, title, performer FROM songs');
+  async getSongs({ title = '', performer = '' }) {
+    const queryTitle = `%${title.toLowerCase()}%`;
+    const queryPerformer = `%${performer.toLowerCase()}%`;
+
+    const query = {
+      text: 'SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE $1 AND LOWER(performer) LIKE $2',
+      values: [queryTitle, queryPerformer]
+    }
+
+    const result = await this._pool.query(query).catch((err) => err);
+    if (!result.rows.length) {
+      throw new NotFoundError('Song not found.')
+    }
+
     return result.rows.map(mapDBSongsColumnsToModel);
   }
 
