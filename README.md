@@ -34,6 +34,7 @@ npm run lint
 ## Migration
 
 When you want to create table with postgres, you can use this command line and you will create two tables (albums & songs).
+I will assume you already setup your postgres (user, role, database, etc)
 
 ```bash
 npm run migrate up
