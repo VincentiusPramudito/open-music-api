@@ -51,7 +51,7 @@ npm run migrate down
 After install all package you can run the program with this command line and your program will be running on development.
 
 ```bash
-npm run start:dev
+npm run start
 ```
 or if you want to running it on production you can run this command line.
 ```bash
